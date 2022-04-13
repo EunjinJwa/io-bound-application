@@ -26,7 +26,11 @@ public class PostController {
     // 2-2 글 목록을 페이징하여 반환
     
     // 3. 글 번호로 조회
-    
+
     // 4. 글 내용으로 검색 -> 해당 내용이 포함된 모든 글
+    @GetMapping("/search")
+    public List<Post> findPostsByContent(@RequestParam String content) {
+        return postRepository.findByContentContains(content);
+    }
 
 }
