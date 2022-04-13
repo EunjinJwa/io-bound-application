@@ -1,5 +1,6 @@
 package class101.foo.io;
 
+import class101.foo.io.cache.PostCacheService;
 import class101.foo.io.messagequeue.Producer;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,6 +21,9 @@ public class PostController {
     PostRepository postRepository;
 
     @Autowired
+    PostCacheService postCacheService;
+
+    @Autowired
     Producer producer;
 
     @Autowired
@@ -36,9 +40,13 @@ public class PostController {
     // 2-1. 글 목록을 조회한다.
     @GetMapping("/posts")
     public Page<Post> getPostList(@RequestParam(defaultValue = "1") int page) {
-        return postRepository.findAll(
-                PageRequest.of(page - 1, PAGE_SIZE, Sort.by("id").descending())
-        );
+        if (page == 1) {
+            return postCacheService.getFirstPostPage();
+        } else {
+            return postRepository.findAll(
+                    PageRequest.of(page - 1, PAGE_SIZE, Sort.by("id").descending())
+            );
+        }
     }
 
     // 3. 글 번호로 조회
